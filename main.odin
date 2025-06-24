@@ -9,6 +9,10 @@ main :: proc() {
 
 	assert(isAnagram("racecar", "carrace"))
 	assert(!isAnagram("jar", "jam"))
+
+	assert(twoSum([]int{3, 4, 5, 6}, 7) == twoSumAnswer{value1 = 0, value2 = 1})
+	assert(twoSum([]int{4, 5, 6}, 10) == twoSumAnswer{value1 = 0, value2 = 2})
+	assert(twoSum([]int{5, 5}, 10) == twoSumAnswer{value1 = 0, value2 = 1})
 }
 
 containsDuplicates :: proc(input: []int) -> bool {
@@ -49,4 +53,24 @@ isAnagram :: proc(word1: string, word2: string) -> bool {
 	}
 
 	return true
+}
+
+twoSumAnswer :: struct {
+	value1: int,
+	value2: int,
+}
+
+twoSum :: proc(components: []int, target: int) -> twoSumAnswer {
+	for val, index in components {
+		for val2, index2 in components {
+			if index == index2 {
+				continue
+			}
+
+			if val + val2 == target {
+				return twoSumAnswer{value1 = index, value2 = index2}
+			}
+		}
+	}
+	return {}
 }
