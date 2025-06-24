@@ -61,15 +61,17 @@ twoSumAnswer :: struct {
 }
 
 twoSum :: proc(components: []int, target: int) -> twoSumAnswer {
-	for val, index in components {
-		for val2, index2 in components {
-			if index == index2 {
-				continue
-			}
+	distanceToTarget := make(map[int]int)
 
-			if val + val2 == target {
-				return twoSumAnswer{value1 = index, value2 = index2}
-			}
+	for val, index in components {
+		distanceToTarget[val] = index
+	}
+
+	for val, index in components {
+		lookup := target - val
+		valIndex, found := distanceToTarget[lookup]
+		if distanceToTarget[lookup] != index {
+			return twoSumAnswer{value1 = index, value2 = valIndex}
 		}
 	}
 	return {}
