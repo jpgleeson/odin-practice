@@ -27,6 +27,9 @@ main :: proc() {
 	)
 	assert(compare_string_groups([dynamic][]string{[]string{"x"}}, groupAnagrams([]string{"x"})))
 	assert(compare_string_groups([dynamic][]string{[]string{""}}, groupAnagrams([]string{""})))
+
+	assert(comparei32Slices(topNFrequent([]i32{1, 2, 2, 3, 3, 3}, 2), []i32{2, 3}))
+	assert(comparei32Slices(topNFrequent([]i32{7, 7}, 1), []i32{7}))
 }
 
 containsDuplicates :: proc(input: []int) -> bool {
@@ -119,6 +122,52 @@ groupAnagrams :: proc(inputs: []string) -> [dynamic][]string {
 	}
 
 	return output
+}
+
+topNFrequent :: proc(inputList: []i32, n: i32) -> []i32 {
+	frequencyGraph := map[i32]i32{}
+	for i := 0; i < len(inputList); i += 1 {
+		value := inputList[i]
+		frequency, found := frequencyGraph[value]
+		frequency += 1
+		frequencyGraph[value] = frequency
+	}
+
+	// Invert the frequencies so the frequency is the key and keep track of the largest value
+	// Then working down from the most frequent, append all found values to a slice and return
+	// the first N of that.
+	retVal := [dynamic]i32{}
+	invertedFrequency := map[i32]i32{}
+	largestK: i32 = 0
+	for key, val in frequencyGraph {
+		if val > largestK {
+			largestK = val
+		}
+		invertedFrequency[val] = key
+	}
+
+
+	for i := largestK; i > 0; i -= 1 {
+		val, found := invertedFrequency[i]
+		if found {
+			append_elem(&retVal, val)
+		}
+	}
+
+	return retVal[:n]
+}
+
+comparei32Slices :: proc(a, b: []i32) -> bool {
+	if len(a) != len(b) do return false
+	slice.sort(a)
+	slice.sort(b)
+	for val, index in a {
+		if val != b[index] {
+			return false
+		}
+	}
+
+	return true
 }
 
 compare_string_groups :: proc(a, b: [dynamic][]string) -> bool {
